@@ -89,7 +89,7 @@
     </div>
     
         <div id="toc" class="toc-article">
-    
+    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#js引擎-内存分配-amp-amp-垃圾回收"><span class="toc-text">js引擎 内存分配 &amp;&amp; 垃圾回收</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#自动分配"><span class="toc-text">自动分配</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#内存管理"><span class="toc-text">内存管理</span></a></li></ol></li></ol>
 </div>
     
 </div>
@@ -125,13 +125,37 @@
     <div class="post-meta">
         <span class="attr">发布于：<span>2019-04-11 16:31:46</span></span>
         
+        <span class="attr">标签：/
         
+        <a class="tag" href="/tags/#js" title="js">js</a>
+        <span>/</span>
+        
+        
+        </span>
         <span class="attr">访问：<span id="busuanzi_value_page_pv"></span>
 </span>
 
     </div>
     <div class="post-content ">
-        
+        <h1 id="js引擎-内存分配-amp-amp-垃圾回收"><a href="#js引擎-内存分配-amp-amp-垃圾回收" class="headerlink" title="js引擎 内存分配 &amp;&amp; 垃圾回收"></a>js引擎 内存分配 &amp;&amp; 垃圾回收</h1><h3 id="自动分配"><a href="#自动分配" class="headerlink" title="自动分配"></a>自动分配</h3><p>在定义变量时，自动分配内存</p>
+<ul>
+<li><p>垃圾回收——GC<br>不需要是自动回收<br>垃圾回收器会周期性的检测出不在使用的内存，释放。<br>一般不在使用的内存，都被局部变量索占用，定义在某个函数内，这些变量的生命周期为从函数执行到函数执行结束。之后这些变量声明周期结束，内存被释放。</p>
+</li>
+<li><p>标记清除&amp;&amp;引用计数*</p>
+<p>  标记清除：当变量进入环境时，变量被标记为”进入环境“，理论上被标记”进入环境“的变量是永远不能被垃圾回收机制回收的，当变量离开环境时，被标记”离开环境“。<br>  引用计数：有没有指针指向该对象，如果没有，此对象内存可以被释放。<br>  注：引用计数当出现循环引用时，会出现问题。<br>  循环引用：对象A、B，A对象有对B对象的引用，B对象有对A对象的引用。</p>
+</li>
+</ul>
+<h3 id="内存管理"><a href="#内存管理" class="headerlink" title="内存管理"></a>内存管理</h3><ul>
+<li><p>什么时候触发垃圾回收？<br>垃圾回收周期性运行，如果分配的内存非常多，那么回收工作也会很艰巨，确定垃圾回收时间间隔就变成了一个值得思考的问题。IE6 的垃圾回收是根据内存分配量运行的，当环境中存在 256 个变量、4096 个对象、64K 的字符串任意一种情况的时候就会触发垃圾回收器工作，看起来很科学，不用按一段时间就调用一次，有时候会没必要，这样按需调用不是很好嘛？但是如果环境中就是有这么多变量一直存在，现在脚本如此复杂，很正常，那么结果就是垃圾回收器一直在工作，这样浏览器就没法玩了。<br>微软在 IE7 中做了调整，触发条件不再是固定的，而是动态修改的，初始值和IE6相同，如果垃圾回收器回收的内存分配量低于程序占用内存的 15%，说明大部分内存不可被回收，设的垃圾回收触发条件过于敏感，这时候把临界条件翻倍，如果回收的内存高于 85%，说明大部分内存早就该清理了，这时候把触发条件置回。这样就使垃圾回收工作智能了很多。</p>
+</li>
+<li><p>合理的 GC 方案<br>1）、JavaScript 引擎基础 GC 方案是（simple GC）：mark and sweep（标记清除），即：<br><em>遍历所有可访问的对象。</em><br><em>回收已不可访问的对象。</em></p>
+<p>  2）、GC 的缺陷<br>  和其他语言一样，JavaScript 的 GC 策略也无法避免一个问题：GC 时，停止响应其他操作，这是为了安全考虑。而 JavaScript 的 GC 在 100ms 甚至以上，对一般的应用还好，但对于 JS 游戏，动画连贯性要求比较高的应用，就麻烦了。这就是新引擎需要优化的点：避免 GC 造成的长时间停止响应。</p>
+</li>
+</ul>
+<blockquote>
+<p>一般不用 setInterval，而用 setTimeout 的延时递归来代替 interval。setInterval 会产生回调堆积，特别是时间很短的时候。</p>
+</blockquote>
+
         
         <br>
         <div id="comment-container">
